@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+
+  jm-mariadb:
+    container_name: jm-mariadb
+    environment:
+      - MARIADB_USER=joomla
+      - MARIADB_DATABASE=joomla
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/mariadb:10.5.13
+    networks:
+      - jm-network
+    ports:
+      - 3306:3306
+    volumes:
+      - jm-mariadb:/bitnami/mariadb
+    restart: unless-stopped
+
+  jm-joomla:
+    container_name: jm-joomla
+    depends_on:
+      - jm-mariadb
+    environment:
+      - JOOMLA_DATABASE_HOST=jm-mariadb
+      - JOOMLA_DATABASE_USER=joomla
+      - JOOMLA_DATABASE_NAME=joomla
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/joomla:4.1.2
+    networks:
+      - jm-network
+    ports:
+      - 8080:8080
+      - 8443:8443
+    volumes:
+      - jm-joomla:/bitnami/joomla
+    restart: unless-stopped
+
+  jm-phpmyadmin:
+    container_name: jm-phpmyadmin
+    depends_on:
+      - jm-mariadb
+    environment:
+      - DATABASE_HOST=jm-mariadb
+    image: bitnami/phpmyadmin:5.1.3
+    networks:
+      - jm-network
+    ports:
+      - 9080:8080
+      - 9443:8443
+    volumes:
+      - jm-phpmyadmin:/bitnami/phpmyadmin
+    restart: unless-stopped
+
+networks:
+
+  jm-network:
+    name: jm-network
+    driver: bridge
+
+volumes:
+
+  jm-mariadb:
+    name: jm-mariadb
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/joomla-mariadb/mariadb
+      o: bind
+
+  jm-joomla:
+    name: jm-joomla
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/joomla-mariadb/joomla
+      o: bind
+
+  jm-phpmyadmin:
+    name: jm-phpmyadmin
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/joomla-mariadb/phpmyadmin
+      o: bind

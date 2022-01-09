@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+
+  gr-gitlab:
+    container_name: gr-gitlab
+    hostname: gitlab.ifmt.edu.br
+    image: gitlab/gitlab-ce:14.9.0-ce.0
+    networks:
+      - gr-network
+    ports:
+      - 8022:22
+      - 8080:80
+      - 8443:443
+      - 5005:5005
+    volumes:
+      - ${BASE}/gitlab-registry/gitlab/etc:/etc/gitlab
+      - ${BASE}/gitlab-registry/gitlab/log:/var/log/gitlab
+      - ${BASE}/gitlab-registry/gitlab/opt:/var/opt/gitlab
+    restart: unless-stopped
+
+  gr-registry:
+    container_name: gr-registry
+    depends_on:
+      - gr-gitlab
+    image: registry:2
+    networks:
+      - gr-network
+    ports:
+      - 5000:5000
+    volumes:
+      - ${BASE}/gitlab-registry/registry:/var/lib/registry
+    restart: unless-stopped
+
+networks:
+
+  gr-network:
+    name: gr-network
+    driver: bridge

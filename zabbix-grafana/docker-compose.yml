@@ -1,0 +1,128 @@
+version: '3.9'
+
+services:
+
+  zg-postgresql:
+    container_name: zg-postgresql
+    environment:
+      POSTGRES_USER: zgmonitor
+      POSTGRES_PASSWORD: zgmonitor
+      POSTGRES_DB: zg-zabbixdb
+    image: postgres:13.5
+    networks:
+      - zg-network
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    volumes:
+      - zg-postgresql-var:/var/lib/postgresql/data
+
+  zg-zabbix-server:
+    container_name: zg-zabbix-server
+    depends_on:
+      - zg-postgresql
+    environment:
+      ZBX_CACHESIZE: 32M
+      DB_SERVER_HOST: zg-postgresql
+      POSTGRES_USER: zgmonitor
+      POSTGRES_PASSWORD: zgmonitor
+      POSTGRES_DB: zg-zabbixdb
+    image: zabbix/zabbix-server-pgsql:ubuntu-5.4.9
+    links:
+      - zg-postgresql
+    networks:
+      - zg-network
+    ports:
+      - 10051:10051
+    restart: unless-stopped
+    volumes:
+      - zg-zabbix-usr:/usr/lib/zabbix
+      - zg-zabbix-var:/var/lib/zabbix
+
+  zg-zabbix-web:
+    container_name: zg-zabbix-web
+    depends_on:
+      - zg-postgresql
+    environment:
+      ZBX_SERVER_HOST: zg-zabbix-server
+      DB_SERVER_HOST: zg-postgresql
+      POSTGRES_USER: zgmonitor
+      POSTGRES_PASSWORD: zgmonitor
+      POSTGRES_DB: zg-zabbixdb
+    image: zabbix/zabbix-web-nginx-pgsql:ubuntu-5.4.9
+    links:
+      - zg-postgresql
+      - zg-zabbix-server
+    networks:
+      - zg-network
+    ports:
+      - 8080:8080
+      - 8443:8443
+    restart: unless-stopped
+
+  zg-grafana:
+    container_name: zg-grafana
+    image: grafana/grafana:8.3.4
+    restart: unless-stopped
+    links:
+      - zg-postgresql
+      - zg-zabbix-server
+    networks:
+      - zg-network
+    ports:
+      - 3000:3000
+    volumes:
+      - zg-grafana-etc:/etc/grafana
+      - zg-grafana-var:/var/lib/grafana
+    depends_on:
+      - zg-postgresql
+
+networks:
+
+  zg-network:
+    name: zg-network
+    driver: bridge
+
+volumes:
+
+  zg-grafana-etc:
+    name: zg-grafana-etc
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/grafana-etc
+      o: bind
+      type: none
+
+  zg-grafana-var:
+    name: zg-grafana-var
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/grafana-var
+      o: bind
+      type: none
+
+  zg-postgresql-etc:
+    name: zg-postgresql-etc
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/pgsql-etc
+      o: bind
+      type: none
+
+  zg-postgresql-var:
+    name: zg-postgresql-var
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/pgsql-var
+      o: bind
+      type: none
+
+  zg-zabbix-usr:
+    name: zg-zabbix-usr
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/zabbix-usr
+      o: bind
+      type: none
+
+  zg-zabbix-var:
+    name: zg-zabbix-var
+    driver_opts:
+      device: ${BASE}/zabbix-grafana/zabbix-var
+      o: bind
+      type: none

@@ -1,0 +1,93 @@
+version: "3.5"
+
+services:
+
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - rap-network
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  rapconector:
+    image: homolog-diploma.rnp.br/rap-conector-beta:0.13.2
+    ports:
+      - "8040:8040"
+    volumes:
+      - rapconector-data:/var/lib/rapconector/data
+    networks:
+      - rap-network
+    depends_on:
+      - db
+    environment:
+      VIRTUAL_PORT: ${VIRTUAL_PORT}
+      API_PORT: ${API_PORT}
+      RAP_DATA_STORAGE_DIR: /var/lib/rapconector/data
+      TIMEZONE: ${TIMEZONE}
+      DOCUMENTATION_SERVER: ${DOCUMENTATION_SERVER}
+      RAP_USE_JWT_AUTHORIZATION: ${RAP_USE_JWT_AUTHORIZATION}
+      RAP_SKIP_REGISTRATION: ${RAP_SKIP_REGISTRATION}
+      PDFA_DOC_VALIDATION: ${PDFA_DOC_VALIDATION}
+      LOG_LEVEL: debug
+      LOG_FILES_DIR: /var/log
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: rap
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      DB_TYPE: postgres
+      RAP_API_ADDRESS: ${RAP_API_ADDRESS}
+      INSTITUTION_ID: ${INSTITUTION_ID}
+      RAP_API_USER_EMAIL: ${RAP_API_USER_EMAIL}
+      RAP_API_USER_PASS: ${RAP_API_USER_PASS}
+      RAP_SIGN_PROVIDER: rnpprovider
+      RNP_PROVIDER_URL: https://homolog-diploma.rnp.br/hub
+
+  rapsign:
+    image: homolog-diploma.rnp.br/rap-sign-web:0.3.2
+    ports:
+      - "3000:3000"
+    networks:
+      - rap-network
+    depends_on:
+      - rapconector
+    environment:
+      API_URL: ${DOCUMENTATION_SERVER}
+
+  rapsimulador:
+    image: homolog-diploma.rnp.br/simulador-integracao:0.9.0
+    ports:
+      - "5000:80"
+    environment:
+      SIMULATOR_DNS_HOST: ${SIMULATOR_DNS_HOST}
+      CONECTOR_URL: ${DOCUMENTATION_SERVER}
+      INSTITUTION_ID: ${INSTITUTION_ID}
+      RAP_USE_JWT_AUTHORIZATION: ${RAP_USE_JWT_AUTHORIZATION}
+      RAP_API_USER_EMAIL: ${RAP_API_USER_EMAIL}
+      RAP_API_USER_PASS: ${RAP_API_USER_PASS}
+
+networks:
+
+  rap-network:
+    external: false
+    name: rap-network
+
+volumes:
+
+  postgresql-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/postgres
+      o: bind
+
+  rapconector-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/conector
+      o: bind

@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+
+  bm-mariadb:
+    container_name: bm-mariadb
+    environment:
+      - MARIADB_DATABASE=bookstack
+      - MARIADB_USER=bookstack
+      - MARIADB_PASSWORD=bookstack
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/mariadb:10.7.3
+    networks:
+      - bm-network
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+    volumes:
+      - bm-mariadb:/bitnami/mariadb
+
+  bm-bookstack:
+    container_name: bm-bookstack
+    depends_on:
+      - bm-mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - APP_URL=http://localhost:8080
+      - DB_HOST=bm-mariadb
+      - DB_USER=bookstack
+      - DB_PASS=bookstack
+      - DB_DATABASE=bookstack
+    image: lscr.io/linuxserver/bookstack:version-v22.03.1
+    networks:
+      - bm-network
+    ports:
+      - 8080:80
+      - 8443:443
+    restart: unless-stopped
+    volumes:
+      - bm-bookstack:/config
+
+  bm-phpmyadmin:
+    container_name: bm-phpmyadmin
+    depends_on:
+      - bm-mariadb
+    environment:
+      - DATABASE_HOST=bm-mariadb
+    image: bitnami/phpmyadmin:5.1.3
+    networks:
+      - bm-network
+    ports:
+      - 9080:8080
+      - 9443:8443
+    volumes:
+      - bm-phpmyadmin:/bitnami/phpmyadmin
+    restart: unless-stopped
+
+networks:
+
+  bm-network:
+    name: bm-network
+    driver: bridge
+
+volumes:
+
+  bm-mariadb:
+    name: bm-mariadb
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/bookstack-mariadb/mariadb
+      o: bind
+
+  bm-bookstack:
+    name: bm-bookstack
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/bookstack-mariadb/bookstack
+      o: bind
+
+  bm-phpmyadmin:
+    name: bm-phpmyadmin
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/bookstack-mariadb/phpmyadmin
+      o: bind

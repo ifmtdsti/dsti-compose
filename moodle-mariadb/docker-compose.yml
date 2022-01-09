@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+
+  mm-mariadb:
+    container_name: mm-mariadb
+    environment:
+      - MARIADB_USER=moodle
+      - MARIADB_DATABASE=moodle
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/mariadb:10.5.13
+    networks:
+      - mm-network
+    ports:
+      - 3306:3306
+    volumes:
+      - mm-mariadb:/bitnami/mariadb
+    restart: unless-stopped
+
+  mm-moodle:
+    container_name: mm-moodle
+    depends_on:
+      - mm-mariadb
+    environment:
+      - MARIADB_HOST=mm-mariadb
+      - MARIADB_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=moodle
+      - MOODLE_DATABASE_NAME=moodle
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/moodle:3.11.6
+    networks:
+      - mm-network
+    ports:
+      - 8080:8080
+      - 8443:8443
+    volumes:
+      - mm-moodle:/bitnami
+    restart: unless-stopped
+
+  mm-phpmyadmin:
+    container_name: mm-phpmyadmin
+    depends_on:
+      - mm-mariadb
+    environment:
+      - DATABASE_HOST=mm-mariadb
+    image: bitnami/phpmyadmin:5.1.3
+    networks:
+      - mm-network
+    ports:
+      - 9080:8080
+      - 9443:8443
+    volumes:
+      - mm-phpmyadmin:/bitnami/phpmyadmin
+    restart: unless-stopped
+
+networks:
+
+  mm-network:
+    name: mm-network
+    driver: bridge
+
+volumes:
+
+  mm-mariadb:
+    name: mm-mariadb
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/mariadb
+      o: bind
+
+  mm-moodle:
+    name: mm-moodle
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/moodle
+      o: bind
+
+  mm-phpmyadmin:
+    name: mm-phpmyadmin
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BASE}/phpmyadmin
+      o: bind

@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+
+  jupyter:
+    container_name: jupyter
+    image: jupyter/datascience-notebook:notebook-6.4.5
+    restart: unless-stopped
+    volumes:
+      - jupyter:/home/jovyan/work
+    ports:
+      - 8080:8888
+    environment:
+      - JUPYTER_TOKEN=ifmt@2021
+      - PASSWORD=ifmt@2021
+
+volumes:
+
+  jupyter:
+    name: jupyter
+    driver_opts:
+      type: none
+      device: ${BASE}/jupyter
+      o: bind
