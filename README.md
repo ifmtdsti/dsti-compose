@@ -1,18 +1,11 @@
-# dsti-composes
+# Docker Composes
 
-## Produção
-
-| compose           | compose         |
-|-------------------|-----------------|
-| gitlab-registry   |  |
-| zabbix-grafana    |  |
-
-## Teste
-
-| compose           | compose         |
-|-------------------|-----------------|
-| bookstack-mariadb |  |
-| joomla-mariadb    |  |
-| jupyter           |  |
-| moodle-mariadb    |  |
-| wordpress-mariadb |  |
+| Aplicação         | Situação |
+|-------------------|----------|
+| bookstack-mariadb | teste    |
+| gitlab-registry   | produção |
+| joomla-mariadb    | teste    |
+| jupyter           | teste    |
+| moodle-mariadb    | teste    |
+| wordpress-mariadb | teste    |
+| zabbix-grafana    | produção |
