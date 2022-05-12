@@ -44,8 +44,8 @@ services:
       INSTITUTION_ID: ${INSTITUTION_ID}
       RAP_API_USER_EMAIL: ${RAP_API_USER_EMAIL}
       RAP_API_USER_PASS: ${RAP_API_USER_PASS}
-      RAP_SIGN_PROVIDER: rnpprovider
-      RNP_PROVIDER_URL: https://homolog-diploma.rnp.br/hub
+      RAP_SIGN_PROVIDER: ${RAP_SIGN_PROVIDER}
+      RNP_PROVIDER_URL: ${RNP_PROVIDER_URL}
 
   rapsign:
     image: homolog-diploma.rnp.br/rap-sign-web:0.3.2
