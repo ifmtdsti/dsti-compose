@@ -1,7 +1,8 @@
 # Docker Compose
 
-As seguintes variaveis devem estar configurados dentro do arquivo .env
+As seguintes variaveis devem estar configuradas dentro do arquivo .env
 
+```
 POSTGRES_DB=rapproddb
 POSTGRES_USER=rapproduser
 POSTGRES_PASSWORD=rapprodpwd
@@ -27,3 +28,4 @@ INSTITUTION_ID=<client_id>
 RAP_SIGN_PROVIDER=rnpprovider
 RNP_PROVIDER_URL=https://diplomadigital.rnp.br/hub
 API_URL=<DNS HTTPS do Conector>
+```
