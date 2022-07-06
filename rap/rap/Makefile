@@ -11,4 +11,4 @@ restart: stop start
 
 env:
 
-	@echo "BASE=${HOME}/.opt/rap" > .env
+	@echo "BASE=${HOME}/.opt" > .env
