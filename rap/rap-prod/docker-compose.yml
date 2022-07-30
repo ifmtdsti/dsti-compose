@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
   rapconector:
-    image: homolog-diploma.rnp.br/rap-conector-beta:0.13.2
+    image: homolog-diploma.rnp.br/rap-conector-beta:0.16.0
     ports:
       - "8040:8040"
     volumes:
@@ -48,7 +48,7 @@ services:
       RNP_PROVIDER_URL: ${RNP_PROVIDER_URL}
 
   rapsign:
-    image: homolog-diploma.rnp.br/rap-sign-web:0.3.2
+    image: homolog-diploma.rnp.br/rap-sign-web:0.3.8
     ports:
       - "3000:3000"
     networks:
