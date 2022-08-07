@@ -8,6 +8,7 @@
 
 ## Pastas
 
-* /opt/gitlab/config
-* /opt/gitlab/logs
-* /opt/gitlab/data
+* /opt/gitlab/gitlab/config
+* /opt/gitlab/gitlab/logs
+* /opt/gitlab/gitlab/data
+* /opt/gitlab/registry
