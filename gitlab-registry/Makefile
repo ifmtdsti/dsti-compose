@@ -1,6 +1,7 @@
 all:
 
 start:
+
 	@docker-compose up --remove-orphans --detach
 
 stop:
@@ -8,7 +9,3 @@ stop:
 	@docker-compose down --remove-orphans --volumes
 
 restart: stop start
-
-env:
-
-	@echo "BASE=${HOME}/.opt" > .env

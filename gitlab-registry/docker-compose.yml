@@ -8,9 +8,9 @@ services:
     networks:
       - gr-network
     ports:
-      - 10.0.206.21:5000:5000
+      - 5000:5000
     volumes:
-      - ${BASE}/registry:/var/lib/registry
+      - ${BASE}/gitlab/registry:/var/lib/registry
     restart: unless-stopped
 
   gr-gitlab:
@@ -18,18 +18,18 @@ services:
       - gr-registry
     container_name: gr-gitlab
     hostname: gitlab.ifmt.edu.br
-    image: gitlab/gitlab-ce:14.9.0-ce.0
+    image: gitlab/gitlab-ce:15.2.2-ce.0
     networks:
       - gr-network
     ports:
-      - 10.0.206.21:8022:22
-      - 10.0.206.21:8080:80
-      - 10.0.206.21:8443:443
-      - 10.0.206.21:5005:5005
+      - 8022:22
+      - 8080:80
+      - 8443:443
+      - 5005:5005
     volumes:
-      - ${BASE}/gitlab/etc:/etc/gitlab
-      - ${BASE}/gitlab/log:/var/log/gitlab
-      - ${BASE}/gitlab/opt:/var/opt/gitlab
+      - ${BASE}/gitlab/gitlab/etc:/etc/gitlab
+      - ${BASE}/gitlab/gitlab/log:/var/log/gitlab
+      - ${BASE}/gitlab/gitlab/opt:/var/opt/gitlab
     restart: unless-stopped
 
 networks:
