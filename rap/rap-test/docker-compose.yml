@@ -48,7 +48,7 @@ services:
       RNP_PROVIDER_URL: ${RNP_PROVIDER_URL}
 
   rapsign:
-    image: homolog-diploma.rnp.br/rap-sign-web:0.3.8
+    image: homolog-diploma.rnp.br/rap-sign-web:0.3.9
     ports:
       - "3000:3000"
     networks:
